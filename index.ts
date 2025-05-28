@@ -23,8 +23,7 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
     return c.json(
       {
         message: "Webhook forwarded successfully",
-        clientError: false,
-        serverError: false,
+        error: false,
       },
       200
     );
@@ -38,8 +37,7 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
       return c.json(
         {
           message: error.response.data,
-          clientError: true,
-          serverError: false,
+          error: true,
         },
         400
       );
@@ -48,12 +46,18 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
     return c.json(
       {
         message: error.message ?? null,
-        clientError: false,
-        serverError: true,
+        error: true,
       },
       500
     );
   }
+});
+
+app.get("/", async (c) => {
+  return c.json(
+    { message: "Discord Webhook Proxy API", error: false, version: "2.0" },
+    200
+  );
 });
 
 export default {
