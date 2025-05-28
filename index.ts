@@ -55,7 +55,7 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
 
 app.get("/", async (c) => {
   return c.json(
-    { message: "Discord Webhook Proxy API", error: false, version: "2.0" },
+    { message: "Discord Webhook Proxy API", error: false, version: "1.0" },
     200
   );
 });
