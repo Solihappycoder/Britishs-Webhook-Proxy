@@ -24,7 +24,7 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
     const total = (end - start).toFixed(2);
 
     logger.info(
-      `Webhook forwarded successfully to webhook ID ${webhookID} at ${localeString} took ${total}ms`
+      `Webhook forwarded successfully to webhook ID ${webhookID} at ${localeString} which took ${total}ms`
     );
     return c.json(
       {
