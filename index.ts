@@ -1,12 +1,14 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import axios from "axios";
+import { logger } from "./logger";
 
 const app = new Hono();
 app.use("*", cors());
 
 app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
   try {
+    const start = performance.now();
     const webhookID = c.req.param("webhookID");
     const webhookToken = c.req.param("webhookToken");
     const discordWebhookURL = `https://discord.com/api/webhooks/${webhookID}/${webhookToken}`;
@@ -18,8 +20,12 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
     });
 
     const localeString = new Date().toLocaleString();
+    const end = performance.now();
+    const total = (end - start).toFixed(2);
 
-    console.log(`✅ | Webhook forwarded successfully ${localeString}`);
+    logger.info(
+      `Webhook forwarded successfully to webhook ID ${webhookID} at ${localeString} took ${total}ms`
+    );
     return c.json(
       {
         message: "Webhook forwarded successfully",
@@ -31,8 +37,12 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
     const localeString = new Date().toLocaleString();
 
     if (axios.isAxiosError(error) && error.response) {
-      console.log(
-        `⚠️ | An error occured while forwarding webhook ${localeString}`
+      logger.error(
+        `An error occured while forwarding webhook at ${localeString} with error ${
+          error.response.data
+            ? JSON.stringify(error.response.data)
+            : error.message
+        }`
       );
       return c.json(
         {
@@ -43,9 +53,12 @@ app.post("/api/webhooks/:webhookID/:webhookToken", async (c) => {
       );
     }
 
+    logger.error(
+      `An error occured while forwarding webhook at ${localeString} with error ${error.message}`
+    );
     return c.json(
       {
-        message: error.message ?? null,
+        message: `An internal error occured`,
         error: true,
       },
       500
