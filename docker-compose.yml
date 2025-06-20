@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: release  # use the final stage from the multi-stage build
+    ports:
+      - "4000:4000"
+    user: bun
+    command: ["bun", "run", "index.ts"]
